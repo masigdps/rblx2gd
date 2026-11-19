@@ -47,8 +47,10 @@ If no Desktop folder exists, the file is written to your home directory instead.
 | **Z Layers** | `0` | One or more depth slices, comma separated. `all`, `*` or an empty field disables depth filtering |
 | **Radius (0 = all)** | `0` | Keeps only parts with `\|x\|` within this many blocks from the map origin. `0` disables the filter |
 | **Scale (studs/block)** | `1` | How many Roblox studs equal one Geometry Dash block |
+| **Length (0 = all)** | `0` | Maximum level width in blocks. Everything past this column of the map is dropped. `0` keeps the full map |
 | **File Name** | `rblx2gdfile` | Output file name (`<name>.gmd`) |
 | **Level Name** | `rblx2gd level` | Level name shown in GD, max 20 characters |
+| **Baseplate** | on | When unchecked, baseplates are excluded from the level |
 
 ### Choosing a scale
 
@@ -67,6 +69,29 @@ z: -256.0 .. 256.0
 ```
 
 A 512×512 baseplate at `Scale = 1` would become 262 144 blocks and is skipped; at `Scale = 8` it fits comfortably.
+
+### Keeping the level short
+
+Geometry Dash chokes on very long levels and on uploads with a huge object string.
+Two levers:
+
+- **Length** caps the width in blocks — anything beyond that column of the map is cut, and the console reports `length limit: N blocks (cut X blocks, Y columns)`.
+- **Scale** raises the studs-per-block ratio so the same map occupies fewer blocks.
+
+The console always ends the run with the final size:
+
+```text
+width: 40 blocks, objects: 160
+```
+
+### Fast mode
+
+The **fast (single-cell objects)** checkbox switches the fill rule:
+
+- **off** — every part is filled cell by cell across its full projected rectangle (solid geometry)
+- **on** — each part becomes a single object placed at the centre of its projected rectangle, and very wide flat parts are treated as baseplates
+
+Object counts drop by one to two orders of magnitude, which is the reliable fix when GD refuses or mangles a long level. On a 67-block test map solid mode produced 208 objects and fast mode produced 8, with the layout still readable.
 
 ### Choosing a Z slice
 
@@ -99,11 +124,14 @@ Start with `all`, then narrow down if background geometry floods the level.
 
 | Material | GD object |
 |---|---|
-| Plastic, SmoothPlastic, Neon, Wood, WoodPlanks, Marble, Basalt, Slate, Concrete, Granite, Brick, Pebble, Cobblestone, Rock, CorrodedMetal, DiamondPlate, Foil, Metal, Grass, Sand, Fabric, Snow, Mud, Ground, Sandstone, Ice, Glacier, Glass, Air, Water | `1` — block |
+| Plastic, SmoothPlastic, Neon, WoodPlanks, Marble, Basalt, Slate, Concrete, Granite, Brick, Pebble, Cobblestone, Rock, CorrodedMetal, DiamondPlate, Foil, Grass, Sand, Fabric, Snow, Mud, Ground, Sandstone, Ice, Glacier, Glass, Air, Water | `1` — block |
+| Metal | `13` — yellow portal |
+| Asphalt | `36` — yellow orb |
+| Wood | `13` — yellow portal |
 | CrackedLava | `8` — spike |
 | Anything else, or no material | skipped |
 
-A part whose name contains `spike`, `saw`, `blade`, `trap` or `barb` becomes a spike regardless of material — this rule overrides the material table.
+A part whose name contains `spike`, `saw`, `blade`, `trap` or `barb` becomes a spike, `portal` becomes a yellow portal, `orb` becomes a yellow orb — these name rules override the material table.
 
 ## Output format
 
@@ -142,11 +170,25 @@ MAX_OBJECTS = 60000
 MAX_PART_CELLS = 60000
 BLOCK_ID = 1
 SPIKE_ID = 8
-MATERIAL_BLOCKS = {256: 1, 804: 8, ...}
+PORTAL_ID = 13
+ORB_ID = 36
+MATERIAL_BLOCKS = {256: 1, 1088: 13, 520: 36, ...}
 SPIKE_NAMES = ("spike", "saw", "blade", "trap", "barb")
+PORTAL_NAMES = ("portal",)
+ORB_NAMES = ("orb",)
+BASEPLATE_NAMES = ("baseplate", "base plate", "floor", "ground")
 ```
 
 To map an additional material, add its Roblox enum value to `MATERIAL_BLOCKS`. Unknown materials resolve to `0`, which the converter treats as "skip this part".
+
+### Baseplates
+
+With **Baseplate** unchecked, a part is treated as a baseplate and dropped when either:
+
+- its name contains `baseplate`, `base plate`, `floor` or `ground`, or
+- its footprint is at least 100×100 blocks and it is 1 block thick or less
+
+The console reports how many were dropped: `baseplate: off (skipped 2)`.
 
 ## Known limitations
 
