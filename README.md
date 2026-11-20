@@ -223,3 +223,5 @@ from rbxlx_parse import parse_rbxlx
 for part in parse_rbxlx("Place.rbxlx"):
     print(part["name"], part["x"], part["y"], part["z"])
 ```
+## Virus total check
+https://www.virustotal.com/gui/file/67523e2e540b69366bb7142e364adcfea98624f58363c2a75a8d301a78e7808b?nocache=1
