@@ -124,8 +124,8 @@ Start with `all`, then narrow down if background geometry floods the level.
 
 | Material | GD object |
 |---|---|
-| Plastic, SmoothPlastic, Neon, WoodPlanks, Marble, Basalt, Slate, Concrete, Granite, Brick, Pebble, Cobblestone, Rock, CorrodedMetal, DiamondPlate, Foil, Grass, Sand, Fabric, Snow, Mud, Ground, Sandstone, Ice, Glacier, Glass, Air, Water | `1` — block |
-| Metal | `13` — yellow portal |
+| Plastic, SmoothPlastic, Neon, WoodPlanks, Marble, Basalt, Slate, Concrete, Granite, Brick, Pebble, Cobblestone, Rock, CorrodedMetal, DiamondPlate, Foil, Grass, Sand, Fabric, Snow, Mud, Ground, Sandstone, Ice, Glacier, Glass, Water | `1` — block |
+| Metal | `13` — ship portal |
 | Asphalt | `36` — yellow orb |
 | Wood | `13` — yellow portal |
 | CrackedLava | `8` — spike |
